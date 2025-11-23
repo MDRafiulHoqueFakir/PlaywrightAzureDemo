@@ -1,0 +1,50 @@
+# Azure Pipeline YAML file
+# This file defines the CI/CD pipeline steps for Azure DevOps.
+
+# Trigger the pipeline on push to the main branch.
+trigger:
+- main
+
+# Use the latest Ubuntu image for the build agent.
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+# Step 1: Use Python 3.x
+# This task installs the specified version of Python on the agent.
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '3.x'
+  displayName: 'Use Python 3.x'
+
+# Step 2: Install dependencies
+# This script upgrades pip and installs the required Python packages from requirements.txt.
+- script: |
+    python -m pip install --upgrade pip
+    pip install -r requirements.txt
+  displayName: 'Install dependencies'
+
+# Step 3: Install Playwright browsers
+# This command installs the necessary browser binaries (Chromium, Firefox, WebKit) for Playwright.
+- script: |
+    playwright install
+  displayName: 'Install Playwright Browsers'
+
+# Step 4: Run tests
+# This script runs the tests using pytest and generates Allure results.
+# --alluredir=allure-results specifies the directory for Allure data.
+- script: |
+    pytest --alluredir=allure-results
+  displayName: 'Run tests'
+
+# Step 5: Publish Test Results
+# This task publishes the JUnit test results (if generated) or you can use an Allure extension.
+# For basic reporting, we'll keep the JUnit publication if you add --junitxml back, 
+# but for Allure, you typically use a specific Allure task or publish the artifacts.
+# Here we will publish the allure-results as a build artifact so they can be used to generate a report later.
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: 'allure-results'
+    ArtifactName: 'allure-results'
+    publishLocation: 'Container'
+  displayName: 'Publish Allure Results'

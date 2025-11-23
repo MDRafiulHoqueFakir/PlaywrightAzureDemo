@@ -1,0 +1,44 @@
+============================= test session starts =============================
+platform win32 -- Python 3.13.2, pytest-7.4.3, pluggy-1.6.0
+rootdir: C:\Rafiul\Automation\PlaywrightAzureDemo
+configfile: pytest.ini
+plugins: allure-pytest-2.13.2, Faker-20.1.0, base-url-2.1.0, cov-4.1.0, html-4.1.1, metadata-3.1.1, playwright-0.7.1, xdist-3.3.1
+collected 3 items
+
+tests\test_cart.py ..F                                                   [100%]
+
+================================== FAILURES ===================================
+_____________________ TestCart.test_cart_visual[chromium] _____________________
+
+self = <test_cart.TestCart object at 0x000001D9C5A45810>
+page = <Page url='https://www.saucedemo.com/cart.html'>
+
+    @allure.story("Advanced: Visual Regression")
+    @allure.severity(allure.severity_level.NORMAL)
+    def test_cart_visual(self, page: Page):
+        from playwright.sync_api import expect
+        print(f"DEBUG: expect(page) type: {type(expect(page))}")
+        print(f"DEBUG: expect(page) dir: {dir(expect(page))}")
+    
+        login_page = LoginPage(page)
+        inventory_page = InventoryPage(page)
+    
+        with allure.step("Login and go to cart"):
+            login_page.load()
+            login_page.login("standard_user", "secret_sauce")
+            inventory_page.add_item_to_cart("sauce-labs-backpack")
+            inventory_page.go_to_cart()
+    
+        with allure.step("Verify visual layout"):
+            # Compare the current page screenshot with the baseline.
+            # Note: The first run will fail and generate the baseline.
+>           expect(page).to_have_screenshot("cart_page.png")
+E           AttributeError: 'PageAssertions' object has no attribute 'to_have_screenshot'
+
+tests\test_cart.py:90: AttributeError
+---------------------------- Captured stdout call -----------------------------
+DEBUG: expect(page) type: <class 'playwright.sync_api._generated.PageAssertions'>
+DEBUG: expect(page) dir: ['__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__firstlineno__', '__format__', '__ge__', '__getattribute__', '__getstate__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__static_attributes__', '__str__', '__subclasshook__', '__weakref__', '_dispatcher_fiber', '_impl_obj', '_loop', '_sync', '_wrap_handler', 'not_to_have_title', 'not_to_have_url', 'on', 'once', 'remove_listener', 'to_have_title', 'to_have_url']
+=========================== short test summary info ===========================
+FAILED tests/test_cart.py::TestCart::test_cart_visual[chromium] - AttributeEr...
+========================= 1 failed, 2 passed in 5.32s =========================
