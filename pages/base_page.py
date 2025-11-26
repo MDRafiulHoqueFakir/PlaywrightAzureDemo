@@ -1,4 +1,4 @@
-from playwright.sync_api import Page
+from playwright.sync_api import Page, Locator
 
 class BasePage:
     """
@@ -21,3 +21,11 @@ class BasePage:
     def get_url(self) -> str:
         """Return the current page URL."""
         return self.page.url
+
+    def smart_find(self, selector: str, fallbacks: list[str] = None) -> Locator:
+        """
+        Find an element using SmartLocator with self-healing capabilities.
+        """
+        from utils.smart_locator import SmartLocator
+        finder = SmartLocator(self.page)
+        return finder.get_locator(selector, fallbacks)
